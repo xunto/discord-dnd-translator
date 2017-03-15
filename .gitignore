@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+# IntelliJ project files
+.idea
+*.iml
+*.pyc
+.gitignore
+.idea/vcs.xml
+.idea/workspace.xml
