@@ -17,8 +17,11 @@ async def on_message(message):
     content = message.content
     if content.startswith('!spell'):
         _, spell = content.split(' ', maxsplit=1)
-        spell, translation = await spells.translate_spell_name(spell)
-        await client.send_message(message.channel, f"{spell}: {translation}")
+        aliases = await spells.translate_spell_name(spell)
+        result = f"{spell}: Не найдено"
+        if aliases:
+            result = "Вариации: " + ('/'.join(sorted(aliases)))
+        await client.send_message(message.channel, result)
 
 
 client.run(os.environ['DISCORD_CLIENT_KEY'])

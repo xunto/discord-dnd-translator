@@ -6,8 +6,8 @@ dictionary = []
 def read_spells_csv():
     with open('spells.csv', 'r') as csv_file:
         reader = csv.reader(csv_file)
-        for russian, english in reader:
-            dictionary.append((russian, english))
+        for row in reader:
+            dictionary.append(row)
 
 
 read_spells_csv()
@@ -23,9 +23,7 @@ def normalize_name(string):
 
 async def translate_spell_name(spell):
     spell_normalized = normalize_name(spell)
-    for russian, english in dictionary:
-        if normalize_name(russian) == spell_normalized:
-            return russian, english
-        elif normalize_name(english) == spell_normalized:
-            return english, russian
-    return spell, "Не найдено"
+    for aliases in dictionary:
+        if spell_normalized in map(normalize_name, aliases):
+            return aliases
+    return None
