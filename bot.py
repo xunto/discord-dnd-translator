@@ -1,12 +1,16 @@
 import discord
 
-import spells
+from spells import TermsRepository
 
 
 class DnDTranslator(discord.Client):
     """
     Bot designed to translate some D&D 5e spells and terms.
     """
+
+    def __init__(self):
+        super().__init__()
+        self.repository = TermsRepository()
 
     async def on_ready(self):
         """
@@ -18,7 +22,7 @@ class DnDTranslator(discord.Client):
         """
         Translate spell name.
         """
-        aliases = await spells.translate_spell_name(spell_name)
+        aliases = await self.repository.translate_spell_name(spell_name)
         if aliases:
             return "Вариации: " + ('/'.join(sorted(aliases)))
         return f"{spell_name}: Не найдено"
