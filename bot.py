@@ -1,27 +1,52 @@
-import os
-
 import discord
 
 import spells
 
-client = discord.Client()
 
+class DnDTranslator(discord.Client):
+    """
+    Bot designed to translate some D&D 5e spells and terms.
+    """
 
-@client.event
-async def on_ready():
-    print('Logged in as', client.user.name)
+    async def on_ready(self):
+        """
+        Post login initialization.
+        """
+        print('Logged in as', self.user.name)
 
-
-@client.event
-async def on_message(message):
-    content = message.content
-    if content.startswith('!spell'):
-        _, spell = content.split(' ', maxsplit=1)
-        aliases = await spells.translate_spell_name(spell)
-        result = f"{spell}: Не найдено"
+    async def handle_spell_translation(self, spell_name):
+        """
+        Translate spell name.
+        """
+        aliases = await spells.translate_spell_name(spell_name)
         if aliases:
-            result = "Вариации: " + ('/'.join(sorted(aliases)))
-        await client.send_message(message.channel, result)
+            return "Вариации: " + ('/'.join(sorted(aliases)))
+        return f"{spell_name}: Не найдено"
+
+    async def on_message(self, message):
+        """
+        Message handler and command handlers.
+        """
+        content = message.content
+
+        result = None
+        if content.startswith('!spell'):
+            _, spell_name = content.split(' ', maxsplit=1)
+            result = await self.handle_spell_translation(spell_name)
+
+        if result:
+            await self.send_message(message.channel, result)
 
 
-client.run(os.environ['DISCORD_CLIENT_KEY'])
+def main():
+    """
+    Init bot class and start it.
+    Takes client key from ENV "DISCORD_CLIENT_KEY".
+    """
+
+    import os
+    DnDTranslator().run(os.environ['DISCORD_CLIENT_KEY'])
+
+
+if __name__ == '__main__':
+    main()
