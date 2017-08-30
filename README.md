@@ -8,9 +8,9 @@ DISCORD_CLIENT_KEY="client key" python3.6 bot.py
 
 ## Usage
 ```
-xunto - Today at 2:46 AM
+User - Today at 2:46 AM
 !spell fire bolt
 
-spell_translation_botBOT - Today at 2:46 AM
+Bot [BOT] - Today at 2:46 AM
 Вариации: Fire bolt/Огненный снаряд
 ```
