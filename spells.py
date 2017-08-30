@@ -1,11 +1,18 @@
 import csv
-from typing import List, Tuple
+from typing import Union, List, Tuple
 
 
 class TermsRepository:
+    """
+    Responsible for fetch and search of translations.
+    """
+
     @staticmethod
     def __read_spells_csv(filename) -> List[Tuple[str, ...]]:
         """
+        Read spell names from specified file.
+        :param filename: Filename.
+        :return: List of names and translations.
         """
         dictionary = []
         with open(filename, 'r') as csv_file:
@@ -15,7 +22,12 @@ class TermsRepository:
         return dictionary
 
     @staticmethod
-    def __normalize_name(string: str) -> str:
+    def normalize_name(string: str) -> str:
+        """
+        Normalize string.
+        :param string: Some string.
+        :return: Normalized string.
+        """
         return string \
             .lower() \
             .strip() \
@@ -25,11 +37,18 @@ class TermsRepository:
     def __init__(self):
         self.dictionary = TermsRepository.__read_spells_csv('spells.csv')
 
-    async def translate_spell_name(self, spell_name):
-        spell_normalized = TermsRepository.__normalize_name(spell_name)
+    async def translate_spell_name(self, spell_name: str) -> Union[
+            None,
+            Tuple[str, ...]]:
+        """
+        Translate spell_name and return all translations.
+        :param spell_name: Spell name.
+        :return: List of translations.
+        """
+        spell_normalized = TermsRepository.normalize_name(spell_name)
         for aliases in self.dictionary:
             if spell_normalized in map(
-                    TermsRepository.__normalize_name,
+                    TermsRepository.normalize_name,
                     aliases):
                 return aliases
         return None
