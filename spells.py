@@ -15,7 +15,7 @@ class TermsRepository:
         :return: List of names and translations.
         """
         dictionary = []
-        with open(filename, 'r') as csv_file:
+        with open(filename, 'r', encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file)
             for row in reader:
                 dictionary.append(tuple(row))
