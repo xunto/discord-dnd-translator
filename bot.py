@@ -1,3 +1,5 @@
+import os
+
 import discord
 
 from spells import TermsRepository
@@ -24,8 +26,8 @@ class DnDTranslator(discord.Client):
         """
         aliases = await self.repository.translate_spell_name(spell_name)
         if aliases:
-            return "Вариации: " + ('/'.join(sorted(aliases)))
-        return f"{spell_name}: Не найдено"
+            return '/'.join(sorted(aliases))
+        return f"\"{spell_name}\" не найдено :disappointed_relieved:"
 
     async def on_message(self, message):
         """
@@ -33,13 +35,15 @@ class DnDTranslator(discord.Client):
         """
         content = message.content
 
-        result = None
+        result_embed = None
         if content.startswith('!spell'):
             _, spell_name = content.split(' ', maxsplit=1)
-            result = await self.handle_spell_translation(spell_name)
+            result_embed = discord.Embed(title=spell_name[:1].upper() + spell_name[1:].lower(),
+                                         description=await self.handle_spell_translation(spell_name),
+                                         colour=0xDEADBF)
 
-        if result:
-            await self.send_message(message.channel, result)
+        if result_embed:
+            await self.send_message(message.channel, embed=result_embed)
 
 
 def main():
@@ -48,7 +52,6 @@ def main():
     Takes client key from ENV "DISCORD_CLIENT_KEY".
     """
 
-    import os
     DnDTranslator().run(os.environ['DISCORD_CLIENT_KEY'])
 
 
