@@ -1,3 +1,5 @@
+import os
+
 import discord
 
 from spells import TermsRepository
@@ -50,8 +52,7 @@ def main():
     Takes client key from ENV "DISCORD_CLIENT_KEY".
     """
 
-    # DnDTranslator().run(os.environ['DISCORD_CLIENT_KEY'])
-    DnDTranslator().run('MzUyNTY4NjM3Njk0OTM1MDUw.DIjCpg.OQ-cGG_pqRpi5Ut-FiEjnDjI-hI')
+    DnDTranslator().run(os.environ['DISCORD_CLIENT_KEY'])
 
 
 if __name__ == '__main__':
