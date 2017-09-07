@@ -1,5 +1,13 @@
+import os
 import csv
-from typing import Union, List, Tuple
+from typing import Union, Tuple
+
+from whoosh import index, fields, query
+
+
+class DictionaryRecord(fields.SchemaClass):
+    group = fields.NUMERIC(stored=True)
+    content = fields.TEXT(stored=True)
 
 
 class Dictionary:
@@ -7,35 +15,34 @@ class Dictionary:
     Responsible for fetch and search of translations.
     """
 
-    @staticmethod
-    def __read_spells_csv(filename) -> List[Tuple[str, ...]]:
+    def __update_index_csv(self, filename) -> None:
         """
         Read spell names from specified file.
         :param filename: Filename.
-        :return: List of names and translations.
+        :return: Nothing.
         """
-        dictionary = []
+        writer = self.index.writer()
         with open(filename, 'r', encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file)
-            for row in reader:
-                dictionary.append(tuple(row))
-        return dictionary
+            for i, row in enumerate(reader):
+                for variant in row:
+                    writer.add_document(
+                        group=i,
+                        content=variant
+                    )
+        writer.commit()
 
-    @staticmethod
-    def normalize_name(string: str) -> str:
-        """
-        Normalize string.
-        :param string: Some string.
-        :return: Normalized string.
-        """
-        return string \
-            .lower() \
-            .strip() \
-            .replace('`', '\'') \
-            .replace('’', '\'')
+    def __init_index(self, index_dir):
+        # TODO: Add a way to clear index
+        #if os.path.exists(index_dir):
+        #    self.index = index.open_dir
+        #else:
+        #    os.mkdir(index_dir)
+        self.index = index.create_in(index_dir, DictionaryRecord)
 
     def __init__(self):
-        self.dictionary = Dictionary.__read_spells_csv('spells.csv')
+        self.__init_index("index")
+        self.__update_index_csv("spells.csv")
 
     async def translate_spell_name(self, spell_name: str) -> Union[
             None,
@@ -45,10 +52,10 @@ class Dictionary:
         :param spell_name: Spell name.
         :return: List of translations.
         """
-        spell_normalized = Dictionary.normalize_name(spell_name)
-        for aliases in self.dictionary:
-            if spell_normalized in map(
-                    Dictionary.normalize_name,
-                    aliases):
-                return aliases
+        with self.index.searcher() as searcher:
+            # TODO: query is not working
+            result = searcher.search(
+                query.Term("content", spell_name)
+            )
+            print(list(result))
         return None
