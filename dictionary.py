@@ -2,7 +2,7 @@ import csv
 from typing import Union, List, Tuple
 
 
-class TermsRepository:
+class Dictionary:
     """
     Responsible for fetch and search of translations.
     """
@@ -35,7 +35,7 @@ class TermsRepository:
             .replace('’', '\'')
 
     def __init__(self):
-        self.dictionary = TermsRepository.__read_spells_csv('spells.csv')
+        self.dictionary = Dictionary.__read_spells_csv('spells.csv')
 
     async def translate_spell_name(self, spell_name: str) -> Union[
             None,
@@ -45,10 +45,10 @@ class TermsRepository:
         :param spell_name: Spell name.
         :return: List of translations.
         """
-        spell_normalized = TermsRepository.normalize_name(spell_name)
+        spell_normalized = Dictionary.normalize_name(spell_name)
         for aliases in self.dictionary:
             if spell_normalized in map(
-                    TermsRepository.normalize_name,
+                    Dictionary.normalize_name,
                     aliases):
                 return aliases
         return None

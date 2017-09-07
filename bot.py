@@ -2,7 +2,7 @@ import os
 
 import discord
 
-from spells import TermsRepository
+from dictionary import Dictionary
 
 
 class DnDTranslator(discord.Client):
@@ -12,7 +12,7 @@ class DnDTranslator(discord.Client):
 
     def __init__(self):
         super().__init__()
-        self.repository = TermsRepository()
+        self.repository = Dictionary()
 
     async def on_ready(self):
         """
@@ -38,9 +38,11 @@ class DnDTranslator(discord.Client):
         result_embed = None
         if content.startswith('!spell'):
             _, spell_name = content.split(' ', maxsplit=1)
-            result_embed = discord.Embed(title=spell_name[:1].upper() + spell_name[1:].lower(),
-                                         description=await self.handle_spell_translation(spell_name),
-                                         colour=0xDEADBF)
+            result_embed = discord.Embed(
+                title=spell_name[:1].upper() + spell_name[1:].lower(),
+                description=await self.handle_spell_translation(spell_name),
+                colour=0xDEADBF
+            )
 
         if result_embed:
             await self.send_message(message.channel, embed=result_embed)
