@@ -39,7 +39,7 @@ class DnDTranslator(discord.Client):
         if content.startswith('!spell'):
             _, spell_name = content.split(' ', maxsplit=1)
             result_embed = discord.Embed(
-                title=spell_name[:1].upper() + spell_name[1:].lower(),
+                title=spell_name.capitalize(),
                 description=await self.handle_spell_translation(spell_name),
                 colour=0xDEADBF
             )
@@ -55,7 +55,6 @@ def main():
     """
 
     DnDTranslator().run(os.environ['DISCORD_CLIENT_KEY'])
-
 
 if __name__ == '__main__':
     main()
